@@ -128,16 +128,24 @@ def init_telegram_bot(telegram_bot_token):
 
 def parse_config_params(config):
     try:
-        email = config["email"]
-        password = config["password"]
+        # 1. Modificación: Leemos primero de las variables de entorno (os.environ.get)
+        # Si no existen en el entorno, hacemos "fallback" al fichero config (YAML)
+        email = os.environ.get("APP_EMAIL") or config.get("email")
+        password = os.environ.get("APP_PASSWORD") or config.get("password")
+        #telegram_bot_token = os.environ.get("APP_TG_TOKEN")
+        #telegram_chat_id = os.environ.get("APP_TG_CHAT_ID")
+        #email = config["email"]
+        #password = config["password"]
         box_name = config["box-name"]
         box_id = config["box-id"]
         booking_goals = config["booking-goals"]
         exceptions = config["exceptions"]
         notify_on_telegram = True if "telegram" in config else False
         if notify_on_telegram:
-            telegram_bot_token = config["telegram"]["telegram-bot-token"]
-            telegram_chat_id = config["telegram"]["telegram-chat-id"]
+            telegram_bot_token = os.environ.get("APP_TG_TOKEN") or config["telegram"]["telegram-bot-token"]
+            telegram_chat_id = os.environ.get("APP_TG_CHAT_ID") or config["telegram"]["telegram-chat-id"]
+            #telegram_bot_token = config["telegram"]["telegram-bot-token"]
+            #telegram_chat_id = config["telegram"]["telegram-chat-id"]
         return email, password, box_name, box_id, booking_goals, exceptions, notify_on_telegram, telegram_bot_token, telegram_chat_id
     except Exception as e:
         logger.error(f"{user_name} - Error parsing configuration parameters: {e}")
